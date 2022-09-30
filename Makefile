@@ -1,2 +1,2 @@
 repl:
-	clj -M:ui:nrepl
+	clj -M:ui:course:nrepl
