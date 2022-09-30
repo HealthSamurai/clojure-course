@@ -1,0 +1,20 @@
+{:paths ["src"]
+ :deps  {org.clojure/clojure                     {:mvn/version "1.11.1"}
+         cheshire/cheshire                       {:mvn/version "5.11.0"}
+         http-kit/http-kit                       {:local/root "libs/http-kit"}
+
+         route-map/route-map                     {:git/url "https://github.com/niquola/route-map"
+                                                  :sha "9523f51cd1508aab5eb49737b3d8cc7315e9699e"}
+
+         healthsamurai/dsql                      {:git/url "https://github.com/HealthSamurai/dsql"
+                                                  :sha "894e5a8ef482338788328976594899a23f9e3c1a"}
+
+         com.github.seancorfield/next.jdbc {:mvn/version "1.2.780"}
+         org.postgresql/postgresql               {:mvn/version "42.5.0"}
+
+         ring/ring                               {:mvn/version "1.9.6"}
+         ring/ring-defaults                      {:mvn/version "0.3.3"}
+
+
+         zen-lang/zen                            {:git/url "https://github.com/zen-lang/zen"
+                                                  :sha "87368424664978250d203a8775e246d39f51ac4c"}}}
