@@ -1,11 +1,7 @@
 {:paths ["src"]
  :deps  {org.clojure/clojure                     {:mvn/version "1.11.1"}
          cheshire/cheshire                       {:mvn/version "5.11.0"}
-<<<<<<< HEAD
-        ;; http-kit/http-kit                       {:local/root "libs/http-kit"}
-=======
          http-kit/http-kit                       {:mvn/version "2.6.0"}
->>>>>>> 42deb7f (Web stuff)
 
          route-map/route-map                     {:git/url "https://github.com/niquola/route-map"
                                                   :sha "9523f51cd1508aab5eb49737b3d8cc7315e9699e"}
