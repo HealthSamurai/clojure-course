@@ -1,0 +1,14 @@
+{:deps   {:aliases [:ui :nrepl]}
+ :builds {:frontend {:asset-path "/js"
+                     :target     :browser
+                     ;;:build-hooks [(stylo.shadow/reload "shadow-target/stylo/dev/public/css/stylo.css")]
+                     :devtools   {:preloads          [re-frisk.preload]
+                                  :http-root         "resources/public"
+                                  :http-port         8765
+                                  #_#_#_#_:watch-dir "shadow-target/stylo/dev/public/css/"
+                                  :watch-path        "/static/css"}
+                     :dev        {:modules    {:frontend {:entries [clojure-course.dev]}}
+                                  :output-dir "resources/public/js"}
+                     :release    {:modules          {:frontend {:entries [clojure-course.prod]}}
+                                  :output-dir       "resources/public/js"
+                                  :compiler-options {:optimizations :advanced :source-maps true}}}}}
