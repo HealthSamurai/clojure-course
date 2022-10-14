@@ -1,0 +1,6 @@
+{ns rpc-ops
+ import #{core}
+
+ test-rpc
+ {:zen/tags #{core/rpc}
+  :zen/desc "Test operation for rpc"}}

@@ -1,0 +1,3 @@
+{ns facade
+ import #{core
+          rpc-ops}}

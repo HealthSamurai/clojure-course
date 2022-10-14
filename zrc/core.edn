@@ -1,0 +1,9 @@
+{ns core
+
+ rpc
+ {:zen/tags #{zen/tag zen/schema}
+  :type zen/map
+  :keys {:params {:confirms #{zen/schema}}
+         :opts {:type zen/any}
+         :result {:confirms #{zen/schema}}
+         :error  {:confirms #{zen/schema}}}}}
