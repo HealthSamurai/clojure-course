@@ -3,8 +3,8 @@
             [zen.core]
             [route-map.core]
             [web.routes]
-            [web.unifn :as u]))
-
+            [web.unifn :as u]
+            [next.jdbc :as jdbc]))
 
 (defn handler [{:as ctx,
                 {:keys [request-method uri]} :request
@@ -16,11 +16,12 @@
         response (:response (u/*apply match ctx))]
     response))
 
-
 (defn start [config]
   (let [ztx (zen.core/new-context)
+        datasource (jdbc/get-datasource (:db config))
         ctx (atom {:config config
-                   :zen ztx})
+                   :zen ztx
+                   :db datasource})
         _ (zen.core/read-ns ztx 'facade)
         handler-wrapper (fn [req & [opts]]
                           (handler (assoc @ctx
@@ -32,8 +33,12 @@
 
 (comment
   (def server (start {:web {:port 7777}
-                      :routes web.routes/routes}))
+                      :routes web.routes/routes
+                      :db {:dbtype "postgres"
+                           :dbname "course"
+                           :host "localhost"
+                           :port 5444
+                           :user "course"
+                           :password "password"}}))
 
-  ((:server-stop-fn server))
-
-  )
+  ((:server-stop-fn server)))
