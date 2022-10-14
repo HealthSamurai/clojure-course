@@ -11,12 +11,12 @@
 
 (t/deftest equation-stuff
   (t/do-report {:type     :testik})
+
   (t/is (= 1 _) )
 
 
   )
 
-t/*test-out*
 
 ;; cljtest - table
 ;; id - uuid

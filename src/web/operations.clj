@@ -2,7 +2,9 @@
   (:require [web.unifn :as u]
             [web.rpc]
             [db.query]
-            [cheshire.core]))
+            [cheshire.core]
+            [hiccup.core]
+            [hiccup.page]))
 
 
 (defmethod u/*fn ::rpc [{:as ctx,
@@ -14,9 +16,13 @@
        {:status 200 :body res})}))
 
 
+
 (defmethod u/*fn ::root [ctx]
   {:response {:status 200
-              :body (with-out-str (clojure.pprint/pprint ctx))}})
+              :body (hiccup.page/html5
+                      [:body
+                       [:div#root]
+                       [:script {:src (str "/static/js/frontend.js")}]])}})
 
 
 (defmethod web.rpc/rpc 'rpc-ops/test-rpc

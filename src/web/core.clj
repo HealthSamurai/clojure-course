@@ -4,7 +4,12 @@
             [route-map.core]
             [web.routes]
             [web.unifn :as u]
-            [next.jdbc :as jdbc]))
+            [next.jdbc :as jdbc]
+            [clojure.string :as str]
+            [ring.util.response]
+            [ring.middleware.head]
+            [ring.util.codec :as codec]))
+
 
 (defn handler [{:as ctx,
                 {:keys [request-method uri]} :request
@@ -12,9 +17,25 @@
   (let [{:as _resolved-route
          :keys [match]}
         (route-map.core/match [request-method uri] routes)
-        _ (clojure.pprint/pprint _resolved-route)
         response (:response (u/*apply match ctx))]
     response))
+
+
+(defn handle-static [h {meth :request-method uri :uri :as req}]
+  (if (and (contains? #{:get :head} meth)
+           (str/starts-with? (or uri "") "/static/"))
+    (let [opts {:root "public"
+                :index-files? true
+                :allow-symlinks? true}
+          path (subs (codec/url-decode (:uri req)) 8)]
+      (-> (ring.util.response/resource-response path opts)
+          (ring.middleware.head/head-response req)))
+    (h req)))
+
+
+(defn wrap-static [h]
+  (fn [req]
+    (handle-static h req)))
 
 (defn start [config]
   (let [ztx (zen.core/new-context)
@@ -23,9 +44,10 @@
                    :zen ztx
                    :db datasource})
         _ (zen.core/read-ns ztx 'facade)
-        handler-wrapper (fn [req & [opts]]
-                          (handler (assoc @ctx
-                                          :request req)))
+        handler-wrapper (-> (fn [req & [opts]]
+                              (handler (assoc @ctx
+                                              :request req)))
+                            (wrap-static))
         server-stop-fn (http-kit/run-server handler-wrapper (:web config))]
 
     (swap! ctx assoc :handler-wrapper handler-wrapper
@@ -41,4 +63,6 @@
                            :user "course"
                            :password "password"}}))
 
-  ((:server-stop-fn server)))
+  ((:server-stop-fn server))
+
+  )

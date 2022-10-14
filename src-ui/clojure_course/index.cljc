@@ -1,4 +1,60 @@
-(ns clojure-course.index)
+(ns clojure-course.index
+  (:require [re-frame.core :as rf]
+            [clojure-course.pages]
+            [clojure-course.interop]
+            [clojure-course.routes]
+            #?(:cljs [reagent.dom])
 
-(prn "Hello")
 
+            #_"zframes"
+            [zframes.cookies :as cookies]
+            #?(:cljs [zframes.routing])
+            #?(:cljs [zframes.redirect])
+            #?(:cljs [zframes.xhr])
+            #?(:cljs [zframes.rpc])
+            #?(:cljs [zframes.debounce])
+            #?(:cljs [zframes.storage :as storage])
+            #?(:cljs [zframes.redirect :as redirect])
+            #?(:cljs [zframes.hotkeys :as hotkeys])
+            #?(:cljs [zframes.window-location :as location])
+            [zframes.dispatch-when]
+            ))
+
+(defn current-page []
+  (let [{page :match params :params :as obj} @(rf/subscribe [:route-map/current-route])
+        route-error @(rf/subscribe [:route-map/error])
+        params (assoc params
+                 :route page
+                 :route-ns (when page (namespace page)))
+        content (if page
+                  (if-let [cmp (get @clojure-course.pages/pages page)]
+                    [cmp params]
+
+                    [:div.not-found (str "Page not found [" (str page) "]")])
+                  (case route-error
+                    nil [:div]
+                    :not-found [:div.not-found (str "Route not found ")]
+                    [:div.not-found (str "Routing error")]))]
+    content))
+
+
+(defn mount-root []
+  #?(:clj  #()
+     :cljs (reagent.dom/render
+             [current-page]
+             (.getElementById js/document "root"))))
+
+
+(rf/reg-event-fx
+  ::initialize
+  (fn [{db :db} _]
+    (let [location-hash (clojure-course.interop/get-location-hash)]
+      {:db {:route-map/routes clojure-course.routes/routes}
+       :route-map/start {}
+       :zen/rpc {:method 'rpc-ops/test-rpc
+                 :path [::initialize]}})))
+
+
+(defn init! []
+  (rf/dispatch [::initialize])
+  (mount-root))
