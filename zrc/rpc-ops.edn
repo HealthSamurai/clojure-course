@@ -3,4 +3,7 @@
 
  test-rpc
  {:zen/tags #{core/rpc}
-  :zen/desc "Test operation for rpc"}}
+  :zen/desc "Test operation for rpc"}
+
+ toggle-test
+ {:zen/tags #{core/rpc}}}

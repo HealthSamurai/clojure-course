@@ -45,3 +45,7 @@
     {:response
      {:status 200
       :body mytable-res}}))
+
+(defmethod web.rpc/rpc 'rpc-ops/toggle-test
+  [ctx req]
+  {:result "?"} #_"OR {:error ?}")
