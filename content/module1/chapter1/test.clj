@@ -5,9 +5,18 @@
 (def _ nil)
 
 
-(t/deftest equation-stuff
-  (t/is (= 1 _)))
+(defmethod t/report :testik [m]
+  (println "M" m))
 
+
+(t/deftest equation-stuff
+  (t/do-report {:type     :testik})
+  (t/is (= 1 _) )
+
+
+  )
+
+t/*test-out*
 
 ;; cljtest - table
 ;; id - uuid
