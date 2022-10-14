@@ -55,3 +55,7 @@
 (defn query [{:as _ctx, :keys [db]} query]
   (jdbc/execute! db (dsql.core/format {} query)
                  {:return-keys true :builder-fn rs/as-unqualified-lower-maps}))
+
+(defn query-one [{:as _ctx, :keys [db]} query]
+  (jdbc/execute-one! db (dsql.core/format {} query)
+                 {:return-keys true :builder-fn rs/as-unqualified-lower-maps}))

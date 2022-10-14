@@ -28,3 +28,19 @@
 
 
   )
+
+(t/deftest simple-toggle-test
+  (world/ensure)
+
+  (try (world/truncate :cljtest)
+       (catch Exception e (println (.getMessage e))))
+
+  (world/rpc-match {:method 'rpc-ops/toggle-test
+                    :params {:ns "clojure.test"
+                             :test-name "one_plus_one"
+                             :status :passed}}
+                   {:status 200
+                    :body {:result "OK"}})
+
+
+  )
