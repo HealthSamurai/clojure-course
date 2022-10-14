@@ -3,4 +3,5 @@
 
 (def routes
   {"rpc" {:POST :web.operations/rpc}
-   :GET :web.operations/root})
+   :GET :web.operations/root
+   "test-db" {:GET :web.operations/test-db}})

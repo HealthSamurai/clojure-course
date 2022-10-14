@@ -11,3 +11,20 @@
                              :b 2}}
                    {:status 200
                     :body {:result "TEST RPC FIRED :)"}}))
+
+
+(t/deftest simple-db-operation-test
+  (world/ensure)
+
+  (try (world/truncate :mytable)
+       (catch Exception e (println (.getMessage e))))
+
+  (world/match {:uri "/test-db"
+                :request-method :get}
+               {:status 200
+                :body [{:id string?
+                        :fields {:a "test" :b "b"}}]})
+
+
+
+  )

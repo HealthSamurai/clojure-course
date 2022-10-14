@@ -1,7 +1,8 @@
 (ns world
   (:require [web.core]
             [web.routes]
-            [matcho.core]))
+            [matcho.core]
+            [db.query]))
 
 
 (defonce servers (atom {}))
@@ -10,7 +11,13 @@
 (def default-config
   {:id     "test-server"
    :web    {:port 27999}
-   :routes web.routes/routes})
+   :routes web.routes/routes
+   :db {:dbtype "postgres"
+        :dbname "course"
+        :host "localhost"
+        :port 5444
+        :user "course"
+        :password "password"}})
 
 
 (defn ensure
@@ -32,3 +39,20 @@
                  :request-method :post
                  :resource req})
        match))))
+
+(defn match
+  ([req match'] (match (get @servers "test-server") req match'))
+  ([{:as cfg, {:keys [id]} :config} req match']
+   (let [ctx (get @servers id)
+         handler (get ctx :handler-wrapper)]
+     (let [res (handler req)]
+       (matcho.core/match
+        res
+        match')
+       res))))
+
+
+(defn truncate
+  ([table-name] (truncate (get @servers "test-server") table-name))
+  ([ctx table-name] (db.query/query ctx {:ql/type :pg/delete
+                                         :from    table-name})))
