@@ -1,21 +1,15 @@
 (ns module1.chapter1.test
-  (:require  [clojure.test :as t]))
+  (:require  [clojure.test :as t]
+             [retest.retest :as rt]
+             [clojure.stacktrace]))
 
 
 (def _ nil)
 
 
-(defmethod t/report :testik [m]
-  (println "M" m))
-
-
-(t/deftest equation-stuff
-  (t/do-report {:type     :testik})
-
-  (t/is (= 1 _) )
-
-
-  )
+(rt/deftest simple-test2
+  (t/testing "simple test"
+    (t/is (= 1 _))))
 
 
 ;; cljtest - table
