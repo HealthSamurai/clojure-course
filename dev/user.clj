@@ -16,8 +16,6 @@
 
 (defn restart-ui [& [clean]]
   (let [cfg (shadow.config/load-cljs-edn!)]
-    (println "AA")
-    (clojure.pprint/pprint cfg)
     (shadow.server/stop!)
     (let [f (io/file ".shadow-cljs")]
       (when (.exists f)
@@ -49,4 +47,5 @@
                                     :password "password"}}))
 
   ((:server-stop-fn server))
+
   )

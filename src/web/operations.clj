@@ -12,22 +12,32 @@
   (let [res (web.rpc/rpc-call ctx op)]
     {:response
      (if (:error res)
-       {:status 422 :body res}
-       {:status 200 :body res})}))
+       {:status 422 :body res :headers {"Content-Type" "application/json"}}
+       {:status 200 :body res :headers {"Content-Type" "application/json"}})}))
 
 
 
 (defmethod u/*fn ::root [ctx]
   {:response {:status 200
               :body (hiccup.page/html5
+                      [:head
+                       [:link {:href "/static/css/stylo.css"
+                               :type "text/css"
+                               :rel  "stylesheet"}]
+                       [:link {:href "/static/css/fonts.css"
+                               :type "text/css"
+                               :rel  "stylesheet"}]]
                       [:body
+                       [:style "font-family: product"]
                        [:div#root]
                        [:script {:src (str "/static/js/frontend.js")}]])}})
 
 
 (defmethod web.rpc/rpc 'rpc-ops/test-rpc
   [ctx req]
-  {:result "TEST RPC FIRED :)"})
+  {:result {:datik  "TEST RPC FIRED :)"
+            :a {:b {:c 1
+                    :d "2"}}}})
 
 
 (defmethod u/*fn ::test-db [ctx]

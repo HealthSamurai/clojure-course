@@ -3,13 +3,11 @@
                      :target     :browser
                      :build-hooks [(stylo.shadow/reload "shadow-target/stylo/dev/public/css/stylo.css")]
                      :devtools   {:preloads          [re-frisk.preload]
-                                  :http-root         "resources/public"
-                                  :http-port         8765
-                                  :watch-dir "shadow-target/stylo/dev/public/css/"
+                                  :watch-dir         "shadow-target/stylo/dev/public/css/"
                                   :watch-path        "/static/css"}
                      :dev        {:modules    {:frontend {:entries [clojure-course.dev]}}
-                                  :output-dir "resources/public/js"
+                                  :output-dir "shadow-target/shadow/dev/public/js"
                                   :compiler-options {:source-maps true}}
                      :release    {:modules          {:frontend {:entries [clojure-course.prod]}}
-                                  :output-dir       "resources/public/js"
+                                  :output-dir       "shadow-target/shadow/release/public/js"
                                   :compiler-options {:optimizations :advanced :source-maps true}}}}}

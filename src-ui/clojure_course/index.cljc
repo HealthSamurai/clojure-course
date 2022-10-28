@@ -18,7 +18,7 @@
             #?(:cljs [zframes.hotkeys :as hotkeys])
             #?(:cljs [zframes.window-location :as location])
             [zframes.dispatch-when]
-            ))
+            [stylo.core :refer [c]]))
 
 (defn current-page []
   (let [{page :match params :params :as obj} @(rf/subscribe [:route-map/current-route])
@@ -35,7 +35,12 @@
                     nil [:div]
                     :not-found [:div.not-found (str "Route not found ")]
                     [:div.not-found (str "Routing error")]))]
-    content))
+    [:main {:class (c {:background-color "white"} :h-screen :w-auto
+                      :flex
+                      [:mx 65] [:my 50] [:rounded 42]
+                      :overflow-hidden)}
+     [:div {:class (c [:w "25%"] {:background-color "#F8F8F8"})}]
+     [:div {:class (c [:w "75%"])}]]))
 
 
 (defn mount-root []

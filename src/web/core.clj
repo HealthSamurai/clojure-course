@@ -44,13 +44,25 @@
 (defn handle-body [h {body :body :as req}]
   (cond-> req
     body (assoc :body (cheshire/parse-stream (io/reader body) keyword))
-    :always h))
+    :always (h)))
 
 
 (defn wrap-body [h]
   (fn [req]
     (handle-body h req)))
 
+
+(defn handle-response [h req]
+  (let [response (h req)]
+    (update response :body (fn [body]
+                             (cond-> body
+                               (= (get-in response [:headers "Content-Type"]) "application/json")
+                               (cheshire/generate-string ))))))
+
+
+(defn wrap-response [h]
+  (fn [req]
+    (handle-response h req)))
 
 
 (defn start [config]
@@ -64,7 +76,8 @@
                               (handler (assoc @ctx
                                               :request req)))
                             (wrap-static)
-                            (wrap-body))
+                            (wrap-body)
+                            (wrap-response))
         server-stop-fn (http-kit/run-server handler-wrapper (:web config))]
 
     (swap! ctx assoc :handler-wrapper handler-wrapper
