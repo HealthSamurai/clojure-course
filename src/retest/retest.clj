@@ -1,14 +1,20 @@
 (ns retest.retest
   (:require [clojure.test :as t]
+            [clojure.string :as str]
             [org.httpkit.client :as client]
             [cheshire.core :as cheshire]))
 
 
 (defn retest-report [f {:keys [test-ns test-name]} m]
-  (t/report (-> m
-                (update :type #(->> % name (str "retest-") keyword))
-                (assoc :ns (name test-ns)
-                       :name (name test-name))))
+  (let [[module chapter file-name] (str/split (name test-ns) #"\." 3)
+        full-path (str test-ns \/ test-name)]
+    (t/report (-> m
+                  (update :type #(->> % name (str "retest-") keyword))
+                  (assoc :module module
+                         :chapter chapter
+                         :file-name file-name
+                         :test-name (name test-name)
+                         :full-path full-path))))
   (f m))
 
 
@@ -19,12 +25,21 @@
                         {:method 'rpc-ops/toggle-test
                          :params m})}))
 
-(defn make-report-event [{:keys [ns name]} status]
-  {:ns ns :name name :status status})
+(defn create-test! [m]
+  ;; TODO: get port from config
+  @(client/post "http://localhost:7777/rpc"
+                {:body (cheshire/generate-string
+                        {:method 'rpc-ops/create-test
+                         :params m})}))
+
+(defn make-report-event [m status]
+  (assoc (select-keys m [:module :chapter :file-name :test-name :full-path])
+         :status status))
 
 (defn add-report-methods []
   (defmethod t/report :retest-pass [m]
-    (send-report! (make-report-event m :passed)))
+    (send-report! (doto (make-report-event m :passed)
+                    (prn '!>>>>))))
 
   (defmethod t/report :retest-fail [m]
     (send-report! (make-report-event m :failed)))
@@ -61,6 +76,15 @@
   When *load-tests* is false, deftest is ignored."
   {:added "1.1"}
   [name & body]
+  (let [cur-ns (clojure.core/name (ns-name *ns*))
+        [module chapter file-name] (str/split cur-ns #"\." 3)
+        full-path (str cur-ns \/ name)]
+    (create-test!
+     {:module module
+      :chapter chapter
+      :file-name file-name
+      :test-name name
+      :full-path full-path}))
   (when t/*load-tests*
       `(def ~(vary-meta name assoc :test
                         `(fn []

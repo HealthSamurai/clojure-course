@@ -81,28 +81,37 @@
                                 :body ^:jsonb/obj [:pg/param body]}}))
 
 (defn update-test-status [test status]
-  (-> test
-      (update status inc)
-      (assoc :status status)))
+  (cond-> test
+    (get test status) (update status inc)
+    :always           (assoc :status status)))
 
-(defn default-test-body [ns name]
-  {:ns ns
-   :name name
-   :full-path (str ns \/ name)
+(defn default-test-body [{:keys [module chapter file-name test-name full-path]}]
+  {:module module
+   :chapter chapter
+   :file-name file-name
+   :test-name test-name
+   :full-path full-path
    :passed 0
    :failed 0
    :error 0})
 
-(defmethod web.rpc/rpc 'rpc-ops/toggle-test
-  [ctx {{:keys [ns name status]} :params :as req}]
-  (println req)
+(defmethod web.rpc/rpc 'rpc-ops/create-test
+  [ctx {{:keys [full-path] :as params} :params}]
   (try
-    (let [full-path (str ns \/ name)
-          status (keyword status)]
-      (if-let [{body :body uuid :uuid} (select-test ctx full-path)]
-        (update-test ctx uuid (update-test-status body status))
-        (create-test ctx (update-test-status (default-test-body ns name) status))))
-    {:result "OK"}
+    (when-not (select-test ctx full-path)
+        {:result (create-test ctx (update-test-status (default-test-body params) :new))})
+    (catch Exception e
+      (println (ex-message e))
+      {:error (ex-message e)})))
+
+(defmethod web.rpc/rpc 'rpc-ops/toggle-test
+  [ctx {{:keys [status full-path] :as params} :params}]
+  (println '111 params)
+  (try
+    (let [status (keyword status)]
+      {:result (if-let [{body :body uuid :uuid} (select-test ctx full-path)]
+                 (update-test ctx uuid (update-test-status body status))
+                 (create-test ctx (update-test-status (default-test-body params) status)))})
     (catch Exception e
       (println (ex-message e))
       {:error (ex-message e)})))

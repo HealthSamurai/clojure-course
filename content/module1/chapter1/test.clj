@@ -7,12 +7,12 @@
 (def _ nil)
 
 
-(t/deftest simple-failed
+(rt/deftest simple-failed
   (t/testing "simple test"
     (t/is (= 1 1))))
 
 
-(t/deftest simple-error
+(rt/deftest simple-error
   (t/testing "simple test"
     (t/is (= 1 1))))
 
