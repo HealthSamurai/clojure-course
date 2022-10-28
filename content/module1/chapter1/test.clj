@@ -7,9 +7,20 @@
 (def _ nil)
 
 
-(rt/deftest simple-test2
+(t/deftest simple-failed
   (t/testing "simple test"
-    (t/is (= 1 _))))
+    (t/is (= 1 1))))
+
+
+(t/deftest simple-error
+  (t/testing "simple test"
+    (t/is (= 1 1))))
+
+
+(t/deftest simple-passed
+  (t/testing "simple test"
+    (t/is (= 1 2))))
+
 
 
 ;; cljtest - table

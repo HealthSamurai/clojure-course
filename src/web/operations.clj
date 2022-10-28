@@ -8,7 +8,7 @@
 
 
 (defmethod u/*fn ::rpc [{:as ctx,
-                         {op :resource} :request}]
+                         {op :body} :request}]
   (let [res (web.rpc/rpc-call ctx op)]
     {:response
      (if (:error res)
@@ -75,21 +75,23 @@
       (update status inc)
       (assoc :status status)))
 
-(defn default-test-body [ns test-name]
+(defn default-test-body [ns name]
   {:ns ns
-   :test-name test-name
-   :full-path (str ns \/ test-name)
+   :name name
+   :full-path (str ns \/ name)
    :passed 0
    :failed 0
    :error 0})
 
 (defmethod web.rpc/rpc 'rpc-ops/toggle-test
-  [ctx {{:keys [ns test-name status]} :params :as req}]
+  [ctx {{:keys [ns name status]} :params :as req}]
+  (println req)
   (try
-    (let [full-path (str ns \/ test-name)]
+    (let [full-path (str ns \/ name)
+          status (keyword status)]
       (if-let [{body :body uuid :uuid} (select-test ctx full-path)]
         (update-test ctx uuid (update-test-status body status))
-        (create-test ctx (update-test-status (default-test-body ns test-name) status))))
+        (create-test ctx (update-test-status (default-test-body ns name) status))))
     {:result "OK"}
     (catch Exception e
       (println (ex-message e))

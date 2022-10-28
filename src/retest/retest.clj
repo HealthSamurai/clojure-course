@@ -1,5 +1,7 @@
 (ns retest.retest
-  (:require [clojure.test :as t]))
+  (:require [clojure.test :as t]
+            [org.httpkit.client :as client]
+            [cheshire.core :as cheshire]))
 
 
 (defn retest-report [f {:keys [test-ns test-name]} m]
@@ -10,15 +12,25 @@
   (f m))
 
 
+(defn send-report! [m]
+  ;; TODO: get port from config
+  @(client/post "http://localhost:7777/rpc"
+                {:body (cheshire/generate-string
+                        {:method 'rpc-ops/toggle-test
+                         :params m})}))
+
+(defn make-report-event [{:keys [ns name]} status]
+  {:ns ns :name name :status status})
+
 (defn add-report-methods []
   (defmethod t/report :retest-pass [m]
-    (println m))
+    (send-report! (make-report-event m :passed)))
 
   (defmethod t/report :retest-fail [m]
-    (println m))
+    (send-report! (make-report-event m :failed)))
 
   (defmethod t/report :retest-error [m]
-    (println m))
+    (send-report! (make-report-event m :error)))
 
   (defmethod t/report :retest-summary [m]
     (println m))

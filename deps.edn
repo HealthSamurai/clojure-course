@@ -61,5 +61,6 @@
    :jvm-opts    ^:replace ["-XX:-OmitStackTraceInFastThrow"
                            "-XX:+UnlockDiagnosticVMOptions"
                            "-XX:+DebugNonSafepoints"
-                           "-Djdk.attach.allowAttachSelf"]}}
- }
+                           "-Djdk.attach.allowAttachSelf"]}
+
+  :test {:extra-paths ["content"]}}}

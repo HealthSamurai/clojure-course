@@ -6,9 +6,11 @@
             [web.unifn :as u]
             [next.jdbc :as jdbc]
             [clojure.string :as str]
+            [clojure.java.io :as io]
             [ring.util.response]
             [ring.middleware.head]
-            [ring.util.codec :as codec]))
+            [ring.util.codec :as codec]
+            [cheshire.core :as cheshire]))
 
 
 (defn handler [{:as ctx,
@@ -33,9 +35,23 @@
     (h req)))
 
 
+
 (defn wrap-static [h]
   (fn [req]
     (handle-static h req)))
+
+
+(defn handle-body [h {body :body :as req}]
+  (cond-> req
+    body (assoc :body (cheshire/parse-stream (io/reader body) keyword))
+    :always h))
+
+
+(defn wrap-body [h]
+  (fn [req]
+    (handle-body h req)))
+
+
 
 (defn start [config]
   (let [ztx (zen.core/new-context)
@@ -47,13 +63,15 @@
         handler-wrapper (-> (fn [req & [opts]]
                               (handler (assoc @ctx
                                               :request req)))
-                            (wrap-static))
+                            (wrap-static)
+                            (wrap-body))
         server-stop-fn (http-kit/run-server handler-wrapper (:web config))]
 
     (swap! ctx assoc :handler-wrapper handler-wrapper
            :server-stop-fn server-stop-fn)))
 
 (comment
+
   (def server (start {:web {:port 7777}
                       :routes web.routes/routes
                       :db {:dbtype "postgres"
