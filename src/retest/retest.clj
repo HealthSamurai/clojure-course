@@ -22,14 +22,16 @@
 (defn send-report! [m]
   ;; TODO: get port from config
   @(client/post "http://localhost:7777/rpc"
-                {:body (cheshire/generate-string
+                {:headers {"content-type" "application/json"}
+                 :body (cheshire/generate-string
                         {:method 'rpc-ops/toggle-test
                          :params m})}))
 
 (defn create-test! [m]
   ;; TODO: get port from config
   @(client/post "http://localhost:7777/rpc"
-                {:body (cheshire/generate-string
+                {:headers {"content-type" "application/json"}
+                 :body (cheshire/generate-string
                         {:method 'rpc-ops/create-test
                          :params m})}))
 
