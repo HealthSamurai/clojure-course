@@ -18,7 +18,8 @@
             #?(:cljs [zframes.hotkeys :as hotkeys])
             #?(:cljs [zframes.window-location :as location])
             [zframes.dispatch-when]
-            [stylo.core :refer [c]]))
+            [stylo.core :refer [c]]
+            [clojure-course.course-tree.view]))
 
 (defn current-page []
   (let [{page :match params :params :as obj} @(rf/subscribe [:route-map/current-route])
@@ -39,7 +40,8 @@
                       :flex
                       [:mx 65] [:my 50] [:rounded 42]
                       :overflow-hidden)}
-     [:div {:class (c [:w "25%"] {:background-color "#F8F8F8"})}]
+     [:div {:class (c [:w "25%"] {:background-color "#F8F8F8"})}
+      [clojure-course.course-tree.view/course-tree]]
      [:div {:class (c [:w "75%"])}]]))
 
 
@@ -55,9 +57,7 @@
   (fn [{db :db} _]
     (let [location-hash (clojure-course.interop/get-location-hash)]
       {:db {:route-map/routes clojure-course.routes/routes}
-       :route-map/start {}
-       :zen/rpc {:method 'rpc-ops/test-rpc
-                 :path [::initialize]}})))
+       :route-map/start {}})))
 
 
 (defn init! []

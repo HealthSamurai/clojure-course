@@ -5,7 +5,7 @@
             [route-map.core :as route-map]))
 
 
-(def routes {:. :init})
+(def routes {:. :clojure-course.course-tree.model/index})
 
 
 (defn get-url-alias

@@ -9,7 +9,8 @@
 
 
 (defmethod u/*fn ::rpc [{:as ctx,
-                         {op :body} :request}]
+                         {:as request, op :body} :request}]
+
   (let [res (web.rpc/rpc-call ctx op)]
     {:response
      (if (:error res)

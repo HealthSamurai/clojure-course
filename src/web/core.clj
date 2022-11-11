@@ -45,9 +45,11 @@
 (defn handle-body [h {body :body :as req}]
   (cond-> req
     body (update :body (fn [body]
-                         (cond-> body
-                           (= (get-in req [:headers "Content-Type"]) "application/json")
-                           (cheshire/parse-stream (io/reader body) keyword))))
+                         (cond
+                           (= (get-in req [:headers "content-type"]) "application/json")
+                           (cheshire/parse-stream (io/reader body)  keyword)
+
+                           :else body)))
     :always (h)))
 
 
