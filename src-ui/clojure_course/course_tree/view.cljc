@@ -21,9 +21,9 @@
    :marker--error                (c {:background-color "var(--error-color)"})
    :marker--alert                (c {:background-color "var(--alert-color)"})
    :tests-summary                (c :flex [:col-gap 25] [:my 0] :mx-auto [:rounded 6] {:width            "max-content"
-                                                                                       :background-color "var(--main-background-color)"})
+                                                                                       #_#_:background-color "var(--main-background-color)"})
    :tests-summary__metric        (c :flex :flex-col :items-center [:row-gap 3])
-   :tests-summary__metric-title  (c {:font-size "1.2rem"})
+   :tests-summary__metric-title  (c :flex {:font-size "1.2rem"})
    :tests-summary__metric-result (c :font-bold {:font-size "4.2rem"})
    })
 
@@ -76,12 +76,12 @@
      [:div {:class [(:tests-summary classes)]}
       [:div {:class [(:tests-summary__metric classes)]}
        [:p {:class [(:tests-summary__metric-title classes)]}
-        "eceived"]
+        "Received"]
        [:p {:class [(:tests-summary__metric-result classes)]}
         (:total stats)]]
       [:div {:class [(:tests-summary__metric classes)]}
        [:p {:class [(:tests-summary__metric-title classes)]}
-        [:img {:src "/static/images/check-circle.svg"
+        #_[:img {:src "/static/images/check-circle.svg"
                :alt "success icon"}]
         [:span "Done"]]
        [:p {:class [(:tests-summary__metric-result classes)]}
