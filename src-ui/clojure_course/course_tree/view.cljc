@@ -47,9 +47,11 @@
            [:div {:class [(:progress-marker-container classes)]}
             [:p {:classes [(:chapter-title classes)]}
              chapter-title]
-            [:div {:class [(:marker classes) (:marker--success classes)]}
-             [:img {:src "/static/images/check-mark.svg"
-                    :alt "success icon"}]]]
+            (if (> (:passed (:stats chapter)) 0)
+              [:div {:class [(:marker classes) (:marker--success classes)]}
+               [:img {:src "/static/images/check-mark.svg"
+                      :alt "success icon"}]]
+              [:div {:class [(:marker classes) (:marker--none classes)]}])]
            [:ol {:class [(:list-tests classes)]}
             (for [[test-title test-content] (:tests chapter)]
               [:li {:key test-title}
