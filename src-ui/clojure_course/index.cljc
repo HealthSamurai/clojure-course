@@ -57,7 +57,9 @@
   (fn [{db :db} _]
     (let [location-hash (clojure-course.interop/get-location-hash)]
       {:db {:route-map/routes clojure-course.routes/routes}
-       :route-map/start {}})))
+       :route-map/start {}
+       :zen/rpc {:method 'rpc-ops/get-course-tree
+                 :path [::initialize]}})))
 
 
 (defn init! []

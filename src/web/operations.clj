@@ -26,7 +26,7 @@
                        [:link {:href "/static/css/stylo.css"
                                :type "text/css"
                                :rel  "stylesheet"}]
-                       [:link {:href "/static/css/fonts.css"
+                       [:link {:href "/static/css/main.css"
                                :type "text/css"
                                :rel  "stylesheet"}]]
                       [:body
@@ -103,6 +103,16 @@
                                     (assoc :created_at (get % :created_at))
                                     (assoc :updated_at (get % :updated_at)))))
         course-tree (reduce (fn [acc {:as test, :keys [module chapter test-name]}]
-                              (assoc-in acc [module chapter test-name] test))
+                              (let [status (:status test)
+                                    safe-inc (fnil inc 0)
+                                    ]
+                                (-> acc
+                                    (assoc-in [:modules module :chapters chapter :tests test-name] test)
+                                    (update-in [:stats status] safe-inc)
+                                    (update-in [:stats :total] safe-inc)
+                                    (update-in [:modules module :stats status] safe-inc)
+                                    (update-in [:modules module :stats :total] safe-inc)
+                                    (update-in [:modules module :chapters chapter :stats status] safe-inc)
+                                    (update-in [:modules module :chapters chapter :stats :total] safe-inc))))
                             {} query-result)]
     {:result course-tree}))
