@@ -19,7 +19,8 @@
             #?(:cljs [zframes.window-location :as location])
             [zframes.dispatch-when]
             [stylo.core :refer [c]]
-            [clojure-course.course-tree.view]))
+            [clojure-course.course-tree.view]
+            [clojure-course.activity-tracker.view]))
 
 (defn current-page []
   (let [{page :match params :params :as obj} @(rf/subscribe [:route-map/current-route])
@@ -36,13 +37,14 @@
                     nil [:div]
                     :not-found [:div.not-found (str "Route not found ")]
                     [:div.not-found (str "Routing error")]))]
-    [:main {:class (c {:background-color "white"} :h-screen :w-auto
-                      :flex
-                      [:mx 65] [:my 50] [:rounded 42]
+    [:main {:class (c [:mx 65] [:my 50])}
+     [clojure-course.activity-tracker.view/activity-tracker]
+     [:div {:class (c {:background-color "white"} :h-screen :w-auto :flex
+                      [:rounded 42]
                       :overflow-hidden)}
-     [:div {:class (c [:w "25%"] {:background-color "#F8F8F8"})}
-      [clojure-course.course-tree.view/course-tree]]
-     [:div {:class (c [:w "75%"])}]]))
+      [:div {:class (c [:w "25%"] {:background-color "#F8F8F8"})}
+       [clojure-course.course-tree.view/course-tree]]
+      [:div {:class (c [:w "75%"])}]]]))
 
 
 (defn mount-root []

@@ -116,3 +116,15 @@
                                     (update-in [:modules module :chapters chapter :stats :total] safe-inc))))
                             {} query-result)]
     {:result course-tree}))
+
+
+(defmethod web.rpc/rpc 'rpc-ops/get-month-activity
+  [ctx _params]
+  (let [query-result (db.query/plain-query ctx ["select count(*), date_trunc('day', now())::date -  date_trunc('day', updated_at)::date as offset_from_current_day
+from cljtest where updated_at > (current_date - interval '5 weeks') group by date_trunc('day', now())::date -  date_trunc('day', updated_at)::date;"])
+        grid-layout (into [] (repeat 35 {:activity 0}))
+        complete-grid-layout (reduce (fn [acc {:keys [count offset_from_current_day]}]
+                                       (assoc-in acc [offset_from_current_day :activity] count))
+                                     grid-layout query-result)]
+
+    {:result (reverse complete-grid-layout)}))

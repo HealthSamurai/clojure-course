@@ -72,3 +72,7 @@
                                      [:jsonb/#>> :body [:full-path]]
                                      [:pg/param test]]})
        {:return-keys true :builder-fn rs/as-unqualified-lower-maps}))))
+
+
+(defn plain-query [{:as _ctx, :keys [db]} query]
+  (jdbc/execute! db query {:return-keys true :builder-fn rs/as-unqualified-lower-maps}))

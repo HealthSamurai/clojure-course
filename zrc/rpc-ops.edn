@@ -12,4 +12,7 @@
  {:zen/tags #{core/rpc}}
 
  get-course-tree
+ {:zen/tags #{core/rpc}}
+
+ get-month-activity
  {:zen/tags #{core/rpc}}}
