@@ -5,4 +5,4 @@ down:
 	docker-compose down
 
 repl:
-	clj -M:ui:course:nrepl:ui:test
+	clj -M:course:nrepl:ui:test
