@@ -50,5 +50,46 @@
   (world/force-restart)
 
   (world/rpc-match {:method 'rpc-ops/get-course-tree}
-                   {:status 200
-                    :body {:result {:course "tree"}}}))
+                   {:status 200,
+                    :body
+                    {:result
+                     {:module1
+                      {:chapter1
+                       {:simple-failed
+                        {:passed 0,
+                         :full-path "module1.chapter1.test/simple-failed",
+                         :module "module1",
+                         :chapter "chapter1",
+                         :updated_at string?,
+                         :status "new",
+                         :file-name "test",
+                         :test-name "simple-failed",
+                         :error 0,
+                         :created_at string?,
+                         :failed 0},
+                        :simple-error
+                        {:passed 0,
+                         :full-path "module1.chapter1.test/simple-error",
+                         :module "module1",
+                         :chapter "chapter1",
+                         :updated_at string?,
+                         :status "new",
+                         :file-name "test",
+                         :test-name "simple-error",
+                         :error 0,
+                         :created_at string?,
+                         :failed 0}},
+                       :chapter2
+                       {:chapter2-test
+                        {:passed 0,
+                         :full-path "module1.chapter2.test/chapter2-test",
+                         :module "module1",
+                         :chapter "chapter2",
+                         :updated_at string?,
+                         :status "new",
+                         :file-name "test",
+                         :test-name "chapter2-test",
+                         :error 0,
+                         :created_at string?,
+                         :failed 0}}}}},
+                    :headers {"Content-Type" "application/json"}}))

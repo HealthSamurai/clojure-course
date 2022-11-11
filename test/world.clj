@@ -44,9 +44,8 @@
   ([{:as cfg, :keys [id]
      :or {id "test-server"}}]
    (try ((get-in @servers [id :server-stop-fn]))
-        (swap! servers assoc id (web.core/start cfg))
-
-        (catch Exception e (.getMessage e)))))
+        (catch Exception e (.getMessage e))
+        (finally (swap! servers assoc id (web.core/start cfg))))))
 
 
 (defn rpc-match

@@ -28,6 +28,8 @@
     :if-not-exists true
     :unlogged true
     :columns {:uuid {:type "text" :primary-key true}
+              :created_at {:type "date"}
+              :updated_at {:type "date"}
               :body {:type "jsonb"}}}))
 
 (defn update-test-list [ctx]

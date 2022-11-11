@@ -23,15 +23,19 @@
 (defn update-test [ctx uuid body]
   (db.query/query ctx {:ql/type :pg/update
                        :update :cljtest
-                       :set {:body ^:jsonb/obj [:pg/param body]}
+                       :set {:body ^:jsonb/obj [:pg/param body]
+                             :updated_at (str (java.time.LocalDateTime/now))}
                        :where [:= :uuid [:pg/param uuid]]}))
 
 
 (defn create-test [ctx body]
-  (db.query/query ctx {:ql/type :pg/insert
-                       :into :cljtest
-                       :value {:uuid (str (java.util.UUID/randomUUID))
-                                :body ^:jsonb/obj [:pg/param body]}}))
+  (let [date-now (str  (java.time.LocalDateTime/now))]
+    (db.query/query ctx {:ql/type :pg/insert
+                         :into :cljtest
+                         :value {:uuid (str (java.util.UUID/randomUUID))
+                                 :created_at date-now
+                                 :updated_at date-now
+                                 :body ^:jsonb/obj [:pg/param body]}})))
 
 
 (defn update-test-status [test status]

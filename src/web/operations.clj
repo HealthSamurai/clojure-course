@@ -98,7 +98,9 @@
                            :select  :*
                            :from    :cljtest}
                           (db.query/query ctx)
-                          (map :body))
+                          (map #(-> (get % :body)
+                                    (assoc :created_at (get % :created_at))
+                                    (assoc :updated_at (get % :updated_at)))))
         course-tree (reduce (fn [acc {:as test, :keys [module chapter test-name]}]
                               (assoc-in acc [module chapter test-name] test))
                             {} query-result)]

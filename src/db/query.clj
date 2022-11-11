@@ -4,6 +4,7 @@
             [dsql.core]
             [next.jdbc.prepare :as prepare]
             [next.jdbc.result-set :as rs]
+            [next.jdbc.date-time]
             [cheshire.core])
   (:import [org.postgresql.util PGobject]
            [java.sql PreparedStatement]))
