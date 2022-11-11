@@ -4,6 +4,7 @@
             [org.httpkit.client :as client]
             [cheshire.core :as cheshire]))
 
+(def ^:dynamic *update-test-list* nil)
 
 (defn retest-report [f {:keys [test-ns test-name]} m]
   (let [[module chapter file-name] (str/split (name test-ns) #"\." 3)
@@ -78,13 +79,15 @@
   [name & body]
   (let [cur-ns (clojure.core/name (ns-name *ns*))
         [module chapter file-name] (str/split cur-ns #"\." 3)
-        full-path (str cur-ns \/ name)]
-    (create-test!
-     {:module module
-      :chapter chapter
-      :file-name file-name
-      :test-name name
-      :full-path full-path}))
+        full-path (str cur-ns \/ name)
+        test-info {:module module
+                   :chapter chapter
+                   :file-name file-name
+                   :test-name name
+                   :full-path full-path}]
+    (if *update-test-list*
+      (swap! *update-test-list* conj test-info)
+      (create-test! test-info)))
   (when t/*load-tests*
       `(def ~(vary-meta name assoc :test
                         `(fn []

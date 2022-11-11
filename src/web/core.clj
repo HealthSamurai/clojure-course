@@ -10,7 +10,8 @@
             [ring.util.response]
             [ring.middleware.head]
             [ring.util.codec :as codec]
-            [cheshire.core :as cheshire]))
+            [cheshire.core :as cheshire]
+            [course-tests.core]))
 
 
 (defn handler [{:as ctx,
@@ -79,7 +80,11 @@
                             (wrap-body)
                             (wrap-response))
         server-stop-fn (http-kit/run-server handler-wrapper (:web config))]
-
+    (future
+      (try (course-tests.core/update-test-list @ctx)
+           (println :done-rescan-tests)
+           (catch Exception e
+             (println e))))
     (swap! ctx assoc :handler-wrapper handler-wrapper
            :server-stop-fn server-stop-fn)))
 

@@ -59,3 +59,15 @@
 (defn query-one [{:as _ctx, :keys [db]} query]
   (jdbc/execute-one! db (dsql.core/format {} query)
                  {:return-keys true :builder-fn rs/as-unqualified-lower-maps}))
+
+(defn delete-tests [{:as _ctx, :keys [db]} tests]
+  (jdbc/with-transaction [tx db]
+    (doseq [test tests]
+      (jdbc/execute!
+       tx
+       (dsql.core/format {} {:pg/type :pg/delete
+                             :pg/from :cljtest
+                             :where [:=
+                                     [:jsonb/#>> :body [:full-path]]
+                                     [:pg/param test]]})
+       {:return-keys true :builder-fn rs/as-unqualified-lower-maps}))))
