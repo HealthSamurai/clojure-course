@@ -48,8 +48,9 @@
         db-test-set (set (map (comp :full-path :body) db-test-list))
         test-set (set (map :full-path test-list))
         tests-to-remove (clojure.set/difference
-                         db-test-set
-                         test-set)
+                          db-test-set
+                          #{nil}
+                          test-set)
         new-tests (clojure.set/difference
                    test-set
                    db-test-set)

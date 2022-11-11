@@ -9,4 +9,7 @@
  {:zen/tags #{core/rpc}}
 
  create-test
+ {:zen/tags #{core/rpc}}
+
+ get-course-tree
  {:zen/tags #{core/rpc}}}

@@ -65,8 +65,8 @@
     (doseq [test tests]
       (jdbc/execute!
        tx
-       (dsql.core/format {} {:pg/type :pg/delete
-                             :pg/from :cljtest
+       (dsql.core/format {} {:ql/type :pg/delete
+                             :from :cljtest
                              :where [:=
                                      [:jsonb/#>> :body [:full-path]]
                                      [:pg/param test]]})

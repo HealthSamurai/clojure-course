@@ -90,3 +90,16 @@
     (catch Exception e
       (println (ex-message e))
       {:error (ex-message e)})))
+
+
+(defmethod web.rpc/rpc 'rpc-ops/get-course-tree
+  [ctx _params]
+  (let [query-result (->> {:ql/type :pg/select
+                           :select  :*
+                           :from    :cljtest}
+                          (db.query/query ctx)
+                          (map :body))
+        course-tree (reduce (fn [acc {:as test, :keys [module chapter test-name]}]
+                              (assoc-in acc [module chapter test-name] test))
+                            {} query-result)]
+    {:result course-tree}))

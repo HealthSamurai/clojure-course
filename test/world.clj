@@ -2,10 +2,20 @@
   (:require [web.core]
             [web.routes]
             [matcho.core]
-            [db.query]))
+            [db.query]
+            [cheshire.core]))
 
 
 (defonce servers (atom {}))
+
+
+(defn nuke-world! []
+  (-> servers
+      deref
+      vals
+      (->> (mapv (fn [s] ((:server-stop-fn s))))))
+
+  (reset! servers {}))
 
 
 (def default-config
@@ -29,15 +39,26 @@
      (swap! servers assoc id (web.core/start cfg)))))
 
 
+(defn force-restart
+  ([] (force-restart default-config))
+  ([{:as cfg, :keys [id]
+     :or {id "test-server"}}]
+   (try ((get-in @servers [id :server-stop-fn]))
+        (swap! servers assoc id (web.core/start cfg))
+
+        (catch Exception e (.getMessage e)))))
+
+
 (defn rpc-match
   ([req match] (rpc-match (get @servers "test-server") req match))
   ([{:as cfg, {:keys [id]} :config} req match]
    (let [ctx (get @servers id)
          handler (get ctx :handler-wrapper)]
      (matcho.core/match
-       (handler {:uri "/rpc"
-                 :request-method :post
-                 :resource req})
+       (update (handler {:uri "/rpc"
+                         :request-method :post
+                         :body req})
+               :body #(cheshire.core/parse-string % keyword))
        match))))
 
 (defn match

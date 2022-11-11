@@ -44,7 +44,10 @@
 
 (defn handle-body [h {body :body :as req}]
   (cond-> req
-    body (assoc :body (cheshire/parse-stream (io/reader body) keyword))
+    body (update :body (fn [body]
+                         (cond-> body
+                           (= (get-in req [:headers "Content-Type"]) "application/json")
+                           (cheshire/parse-stream (io/reader body) keyword))))
     :always (h)))
 
 
@@ -58,7 +61,7 @@
     (update response :body (fn [body]
                              (cond-> body
                                (= (get-in response [:headers "Content-Type"]) "application/json")
-                               (cheshire/generate-string ))))))
+                               (cheshire/generate-string))))))
 
 
 (defn wrap-response [h]
@@ -80,11 +83,10 @@
                             (wrap-body)
                             (wrap-response))
         server-stop-fn (http-kit/run-server handler-wrapper (:web config))]
-    (future
-      (try (course-tests.core/update-test-list @ctx)
-           (println :done-rescan-tests)
-           (catch Exception e
-             (println e))))
+    (try (course-tests.core/update-test-list @ctx)
+         (println :done-rescan-tests)
+         (catch Exception e
+           (println e)))
     (swap! ctx assoc :handler-wrapper handler-wrapper
            :server-stop-fn server-stop-fn)))
 
