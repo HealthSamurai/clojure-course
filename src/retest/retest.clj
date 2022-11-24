@@ -7,16 +7,16 @@
 (def ^:dynamic *update-test-list* nil)
 
 (defn retest-report [f {:keys [test-ns test-name]} m]
-  (let [[module chapter file-name] (str/split (name test-ns) #"\." 3)
-        full-path (str test-ns \/ test-name)]
-    (t/report (-> m
-                  (update :type #(->> % name (str "retest-") keyword))
-                  (assoc :module module
-                         :chapter chapter
-                         :file-name file-name
-                         :test-name (name test-name)
-                         :full-path full-path))))
-  (f m))
+  (when-let [[module chapter file-name] (some-> test-ns name (str/split #"\." 3))]
+    (let [full-path (str test-ns \/ test-name)]
+      (t/report (-> m
+                    (update :type #(->> % name (str "retest-") keyword))
+                    (assoc :module module
+                           :chapter chapter
+                           :file-name file-name
+                           :test-name (name test-name)
+                           :full-path full-path)))
+      (f m))))
 
 
 (defn send-report! [m]
