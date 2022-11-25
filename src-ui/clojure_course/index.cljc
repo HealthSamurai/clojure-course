@@ -21,6 +21,7 @@
             [zframes.dispatch-when]
             [stylo.core :refer [c]]
             [clojure-course.course-tree.view]
+            [clojure-course.course-content.view]
             [clojure-course.activity-tracker.view]
             [clojure-course.activity-tracker.model :refer [activity-tracker-open? ]]))
 
@@ -49,7 +50,8 @@
                        :overflow-hidden)]}
       [:div {:class (c [:w "30%"] [:px 20] [:py 15] {:background-color "#F8F8F8"})}
        [clojure-course.course-tree.view/course-tree]]
-      [:div {:class (c [:w "70%"])}]]]))
+      [:div {:class (c [:w "70%"] [:px 30] [:py 15])}
+       [clojure-course.course-content.view/course-content]]]]))
 
 
 (zf/defx ws-receive [{db :db} data]

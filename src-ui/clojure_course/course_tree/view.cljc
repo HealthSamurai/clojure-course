@@ -3,6 +3,7 @@
             [clojure-course.course-tree.model :refer [course-tree-s
                                                       select-module
                                                       select-chapter]]
+            [clojure-course.course-content.model :refer [fetch-content]]
             [zf]
             [stylo.core :refer [c]]))
 
@@ -64,7 +65,9 @@ details[open] summary:before {
            [:li {:key chapter-title
                  :class (c :grid [:row-gap 8])}
             [:div {:class (c :flex :justify-between :items-center)
-                   :on-click #(select-chapter chapter-title)}
+                   :on-click (fn []
+                               (select-chapter chapter-title)
+                               (fetch-content module-title chapter-title))}
              [:p {:class (c {:font-size "1.8rem"} :capitalize
                             :transition-opacity {:transition-duration "70ms"} :ease-in
                             :cursor-pointer [:hover [:opacity 60]])}

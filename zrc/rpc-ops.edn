@@ -15,4 +15,7 @@
  {:zen/tags #{core/rpc}}
 
  get-month-activity
+ {:zen/tags #{core/rpc}}
+
+ get-course-content
  {:zen/tags #{core/rpc}}}

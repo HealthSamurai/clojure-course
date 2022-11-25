@@ -3,6 +3,7 @@
  :deps  {org.clojure/clojure                     {:mvn/version "1.11.1"}
          cheshire/cheshire                       {:mvn/version "5.11.0"}
          http-kit/http-kit                       {:mvn/version "2.6.0"}
+         hiccup/hiccup                           {:mvn/version "2.0.0-alpha2"}
 
          route-map/route-map                     {:git/url "https://github.com/niquola/route-map"
                                                   :sha "9523f51cd1508aab5eb49737b3d8cc7315e9699e"}
