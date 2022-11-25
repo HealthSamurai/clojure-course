@@ -95,26 +95,38 @@
 
 (defmethod web.rpc/rpc 'rpc-ops/get-course-tree
   [ctx _params]
-  (let [query-result (->> {:ql/type :pg/select
+  (let [calc-overall-module-progress (fn [course-tree]
+                                       (update course-tree :modules
+                                               (fn [modules]
+                                                 (into {} (map (fn [[mname {:as cont,
+                                                                            {:keys [total passed]
+                                                                             :or {total 0
+                                                                                  passed 0}} :stats}]]
+                                                                 [mname (assoc-in cont [:stats :module-progress]
+                                                                                  (int (* (/ passed total) 100)))]))
+                                                       modules))))
+        query-result (->> {:ql/type :pg/select
                            :select  :*
                            :from    :cljtest}
                           (db.query/query ctx)
                           (map #(-> (get % :body)
                                     (assoc :created_at (get % :created_at))
                                     (assoc :updated_at (get % :updated_at)))))
-        course-tree (reduce (fn [acc {:as test, :keys [module chapter test-name]}]
-                              (let [status (:status test)
-                                    safe-inc (fnil inc 0)
-                                    ]
-                                (-> acc
-                                    (assoc-in [:modules module :chapters chapter :tests test-name] test)
-                                    (update-in [:stats status] safe-inc)
-                                    (update-in [:stats :total] safe-inc)
-                                    (update-in [:modules module :stats status] safe-inc)
-                                    (update-in [:modules module :stats :total] safe-inc)
-                                    (update-in [:modules module :chapters chapter :stats status] safe-inc)
-                                    (update-in [:modules module :chapters chapter :stats :total] safe-inc))))
-                            {} query-result)]
+        course-tree (->> query-result
+                         (reduce (fn [acc {:as test, :keys [module chapter test-name]}]
+                                   (let [status (keyword (:status test))
+                                         safe-inc (fnil inc 0)]
+                                     (-> acc
+                                         (assoc-in [:modules module :chapters chapter :tests test-name] test)
+                                         (update-in [:stats status] safe-inc)
+                                         (update-in [:stats :total] safe-inc)
+                                         (update-in [:modules module :stats status] safe-inc)
+                                         (update-in [:modules module :stats :total] safe-inc)
+                                         (update-in [:modules module :chapters chapter :stats status] safe-inc)
+                                         (update-in [:modules module :chapters chapter :stats :total] safe-inc))))
+                                 {})
+                         (calc-overall-module-progress))]
+
     {:result course-tree}))
 
 

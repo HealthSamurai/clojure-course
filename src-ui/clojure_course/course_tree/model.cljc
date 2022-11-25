@@ -11,6 +11,26 @@
              :path [page]}})
 
 
+(zf/defx select-module
+  [{:keys [db]} module]
+  {:db (assoc-in db [page :selected-module] module)})
+
+
+(zf/defs selected-module
+  [db _]
+  (get-in db [page :selected-module]))
+
+
+(zf/defx select-chapter
+  [{:keys [db]} module]
+  {:db (assoc-in db [page :selected-chapter] module)})
+
+
+(zf/defs selected-chapter
+  [db _]
+  (get-in db [page :selected-chapter]))
+
+
 (zf/defs course-tree-s
   [db _]
   (get-in db [page :data]))

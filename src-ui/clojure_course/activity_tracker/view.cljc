@@ -2,7 +2,9 @@
   (:require [clojure-course.pages]
             [zf]
             [stylo.core :refer [c]]
-            [clojure-course.activity-tracker.model :refer [activity-tracker-s open-activity-tracker activity-tracker-open?]]))
+            [clojure-course.activity-tracker.model :refer [activity-tracker-s open-activity-tracker activity-tracker-open?]]
+            [clojure-course.course-tree.model :refer [selected-module
+                                                      selected-chapter]]))
 
 
 (defn get-activity-cell-color [activity]
@@ -13,7 +15,7 @@
     (>= activity 0) (c {:background-color "#EBEBEB"})))
 
 
-(zf/defv activity-tracker [activity-tracker-s activity-tracker-open?]
+(zf/defv activity-tracker [activity-tracker-s activity-tracker-open? selected-module selected-chapter]
   (if-not activity-tracker-open?
     [:div {:class (c :flex :justify-end [:mx 20] [:my 10])}
      [:div {:class (c :flex :items-center [:hover :cursor-pointer])
@@ -27,11 +29,14 @@
     [:div {:class (c [:rounded-t 42] {:background-color "rgba(255,255,255,0.5)"}
                      [:space-x 15]
                      :flex [:p 17])}
+
      [:div {:class (c [:rounded 16] {:background-color "#22D677"}
                       [:py 10] [:px 20]
+                      [:w-min "334px"]
                       :flex :flex-col)}
-      [:div {:class (c [:text :white] :uppercase :font-bold)} "current module"]
-      [:div {:class (c :text-3xl :capitalize {:color "#037659"} :font-bold)} "current chapter"]]
+      [:div {:class (c [:text :white] :uppercase :font-bold)} ((fnil name "Module is not selected") selected-module)]
+      [:div {:class (c :text-3xl :capitalize {:color "#037659"} :font-bold)} ((fnil name "Chapter is not selected") selected-chapter)]]
+
      [:div {:class (c :shadow-md :flex [:py 8] [:px 13] [:bg :white] [:rounded 16] :items-center)}
       [:div {:class (c :grid [:grid-rows 5] [:grid-cols 7] [:mr 5])}
        (for [{:as _cell, :keys [activity]} activity-tracker-s]

@@ -46,9 +46,9 @@
                     (c {:background-color "white"} :h-screen :w-auto :flex
                        [:rounded-b 42]
                        :overflow-hidden)]}
-      [:div {:class (c [:w "25%"] [:px 20] [:py 15] {:background-color "#F8F8F8"})}
+      [:div {:class (c [:w "30%"] [:px 20] [:py 15] {:background-color "#F8F8F8"})}
        [clojure-course.course-tree.view/course-tree]]
-      [:div {:class (c [:w "75%"])}]]]))
+      [:div {:class (c [:w "70%"])}]]]))
 
 
 (defn mount-root []
