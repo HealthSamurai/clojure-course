@@ -6,7 +6,8 @@
             [hiccup.core]
             [hiccup.page]
             [org.httpkit.server :as server]
-            [course-tests.operations :as ctop]))
+            [course-tests.operations :as ctop]
+            [clojure.walk]))
 
 
 (defmethod u/*fn ::rpc [{:as ctx,
@@ -90,10 +91,14 @@
       {:error (ex-message e)})))
 
 
+(defn get-course-tree! [ctx]
+  (web.rpc/rpc-call ctx {:method 'rpc-ops/get-course-tree}))
+
+
 (defmethod web.rpc/rpc 'rpc-ops/create-test [ctx {params :params}]
-  (let [result (create-test ctx params)]
-    (println 'create-test result)
-    (notify-client ctx result)
+  (let [result (create-test ctx params)
+        course-tree (get-course-tree! ctx)]
+    (notify-client ctx course-tree)
     result))
 
 
@@ -113,8 +118,9 @@
 
 (defmethod web.rpc/rpc 'rpc-ops/toggle-test
   [ctx {params :params}]
-  (let [result (toggle-test ctx params)]
-    (notify-client ctx result)
+  (let [result (toggle-test ctx params)
+        course-tree (get-course-tree! ctx)]
+    (notify-client ctx course-tree)
     result))
 
 
@@ -152,7 +158,11 @@
                                  {})
                          (calc-overall-module-progress))]
 
-    {:result course-tree}))
+    {:result (clojure.walk/postwalk (fn [node]
+                                      (if (map? node)
+                                        (into (sorted-map) node)
+                                        node))
+                                    course-tree)}))
 
 
 (defmethod web.rpc/rpc 'rpc-ops/get-month-activity

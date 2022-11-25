@@ -5,7 +5,7 @@
             [clojure-course.routes]
             #?(:cljs [reagent.dom])
 
-
+            [zf]
             #_"zframes"
             [zframes.cookies :as cookies]
             #?(:cljs [zframes.routing])
@@ -17,6 +17,7 @@
             #?(:cljs [zframes.redirect :as redirect])
             #?(:cljs [zframes.hotkeys :as hotkeys])
             #?(:cljs [zframes.window-location :as location])
+            [zframes.ws]
             [zframes.dispatch-when]
             [stylo.core :refer [c]]
             [clojure-course.course-tree.view]
@@ -51,6 +52,19 @@
       [:div {:class (c [:w "70%"])}]]]))
 
 
+(zf/defx ws-receive [{db :db} data]
+  (println "ws-receive" data)
+  {:db (assoc-in db [:clojure-course.course-tree.model/index :data] (get-in data [:data :result]))})
+
+(zf/defx ws-reopen [{db :db} data]
+  (println "ws-reopen")
+  (println data))
+
+(zf/defx ws-open [{db :db} data]
+  (println "ws-open")
+  (println data))
+
+
 (defn mount-root []
   #?(:clj  #()
      :cljs (reagent.dom/render
@@ -65,8 +79,12 @@
       {:db {:route-map/routes clojure-course.routes/routes}
        :route-map/start {}
        :zen/rpc {:method 'rpc-ops/get-course-tree
-                 :path [::initialize]}})))
-
+                 :path [::initialize]}
+       :ws/connect {:id :course-tree/ws
+                    :uri "/ws"
+                    :open {:event ::ws-open}
+                    :reopen {:event ::ws-reopen}
+                    :receive {:event ::ws-receive}}})))
 
 (defn init! []
   (rf/dispatch [::initialize])
