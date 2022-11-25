@@ -84,6 +84,7 @@
         ctx (atom {:config config
                    :zen ztx
                    :db datasource})
+        _ (swap! ctx assoc :_self ctx)
         _ (zen.core/read-ns ztx 'facade)
         handler-wrapper (-> (fn [req & [opts]]
                               (handler (assoc @ctx

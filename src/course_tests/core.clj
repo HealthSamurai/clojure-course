@@ -2,7 +2,8 @@
   (:require [retest.retest :as rt]
             [db.query :as db]
             [clojure.java.io :as io]
-            [course-tests.operations :as ctop]))
+            [course-tests.operations :as ctop]
+            [clojure.string :as str]))
 
 
 (defn recursive-eval [file]
@@ -14,7 +15,8 @@
 
       (.isDirectory file)
       (doseq [child-file (.list file)]
-        (recursive-eval (str absolute-path \/ child-file)))
+        (when (str/ends-with? child-file ".clj")
+          (recursive-eval (str absolute-path \/ child-file))))
 
       (.isFile file)
       (load-file absolute-path))))

@@ -21,11 +21,11 @@
 
 
 (defn update-test [ctx uuid body]
-  (db.query/query ctx {:ql/type :pg/update
-                       :update :cljtest
-                       :set {:body ^:jsonb/obj [:pg/param body]
-                             :updated_at (str (java.time.LocalDateTime/now))}
-                       :where [:= :uuid [:pg/param uuid]]}))
+  (db.query/query-one ctx {:ql/type :pg/update
+                           :update :cljtest
+                           :set {:body ^:jsonb/obj [:pg/param body]
+                                 :updated_at (str (java.time.LocalDateTime/now))}
+                           :where [:= :uuid [:pg/param uuid]]}))
 
 
 (defn create-test [ctx body]

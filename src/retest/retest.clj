@@ -41,8 +41,7 @@
 
 (defn add-report-methods []
   (defmethod t/report :retest-pass [m]
-    (send-report! (doto (make-report-event m :passed)
-                    (prn '!>>>>))))
+    (send-report! (make-report-event m :passed)))
 
   (defmethod t/report :retest-fail [m]
     (send-report! (make-report-event m :failed)))

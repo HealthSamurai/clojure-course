@@ -5,12 +5,12 @@
             [cheshire.core]
             [hiccup.core]
             [hiccup.page]
+            [org.httpkit.server :as server]
             [course-tests.operations :as ctop]))
 
 
 (defmethod u/*fn ::rpc [{:as ctx,
                          {:as request, op :body} :request}]
-
   (let [res (web.rpc/rpc-call ctx op)]
     {:response
      (if (:error res)
@@ -18,21 +18,30 @@
        {:status 200 :body res :headers {"Content-Type" "application/json"}})}))
 
 
-
 (defmethod u/*fn ::root [ctx]
   {:response {:status 200
               :body (hiccup.page/html5
-                      [:head
-                       [:link {:href "/static/css/stylo.css"
-                               :type "text/css"
-                               :rel  "stylesheet"}]
-                       [:link {:href "/static/css/main.css"
-                               :type "text/css"
-                               :rel  "stylesheet"}]]
-                      [:body
-                       [:style "font-family: product"]
-                       [:div#root]
-                       [:script {:src (str "/static/js/frontend.js")}]])}})
+                     [:head
+                      [:link {:href "/static/css/stylo.css"
+                              :type "text/css"
+                              :rel  "stylesheet"}]
+                      [:link {:href "/static/css/main.css"
+                              :type "text/css"
+                              :rel  "stylesheet"}]]
+                     [:body
+                      [:style "font-family: product"]
+                      [:div#root]
+                      [:script {:src (str "/static/js/frontend.js")}]])}})
+
+
+(defmethod u/*fn ::websocket [{:as ctx
+                               {:as request} :request}]
+  {:response (server/as-channel
+              request
+              {:on-open (fn [ch]
+                          (swap! (:_self ctx) assoc :ws/connection ch))
+               :on-close (fn [ch status]
+                           (swap! (:_self ctx) dissoc :ws/connection))})})
 
 
 (defmethod web.rpc/rpc 'rpc-ops/test-rpc
@@ -53,8 +62,8 @@
                        :into :mytable
                        :value {:id (str (java.util.UUID/randomUUID))
                                :fields (cheshire.core/generate-string
-                                          {:a "test" ;;HACK FIXME
-                                           :b "b"})}
+                                        {:a "test" ;;HACK FIXME
+                                         :b "b"})}
                        :returning :*})
 
   (let [mytable-res (db.query/query ctx {:ql/type :pg/select
@@ -64,9 +73,12 @@
      {:status 200
       :body mytable-res}}))
 
+(defn notify-client [{connection :ws/connection} test]
+  (when (and connection (server/open? connection))
+    (server/send! connection (cheshire.core/generate-string test))))
 
-(defmethod web.rpc/rpc 'rpc-ops/create-test
-  [ctx {{:keys [full-path] :as params} :params}]
+
+(defn create-test [ctx {:keys [full-path] :as params}]
   (try
     {:result (if-let [test (ctop/select-test ctx full-path)]
                test
@@ -78,8 +90,14 @@
       {:error (ex-message e)})))
 
 
-(defmethod web.rpc/rpc 'rpc-ops/toggle-test
-  [ctx {{:keys [status full-path] :as params} :params}]
+(defmethod web.rpc/rpc 'rpc-ops/create-test [ctx {params :params}]
+  (let [result (create-test ctx params)]
+    (println 'create-test result)
+    (notify-client ctx result)
+    result))
+
+
+(defn toggle-test [ctx {:keys [status full-path] :as params}]
   (try
     (let [status (keyword status)]
       {:result (if-let [{body :body uuid :uuid} (ctop/select-test ctx full-path)]
@@ -91,6 +109,13 @@
     (catch Exception e
       (println (ex-message e))
       {:error (ex-message e)})))
+
+
+(defmethod web.rpc/rpc 'rpc-ops/toggle-test
+  [ctx {params :params}]
+  (let [result (toggle-test ctx params)]
+    (notify-client ctx result)
+    result))
 
 
 (defmethod web.rpc/rpc 'rpc-ops/get-course-tree
