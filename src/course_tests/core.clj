@@ -15,11 +15,11 @@
 
       (.isDirectory file)
       (doseq [child-file (.list file)]
-        (when (str/ends-with? child-file ".clj")
-          (recursive-eval (str absolute-path \/ child-file))))
+        (recursive-eval (str absolute-path \/ child-file)))
 
       (.isFile file)
-      (load-file absolute-path))))
+      (when (str/ends-with? absolute-path ".clj")
+        (load-file absolute-path)))))
 
 
 (defn create-cljtest-table [ctx]
