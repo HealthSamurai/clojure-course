@@ -36,7 +36,8 @@
       [:div {:key module-title}
        [:h2 {:class [(:module-title classes)]}
         module-title]
-       [:div {:class [(:progress-bar-full classes)]}
+       [:div {:class [(:progress-bar-full classes)
+                      (c [:mb 10])]}
         [:div {:class [(:progress-bar-filled classes)]
                :style {:width "75%"}}]]
 

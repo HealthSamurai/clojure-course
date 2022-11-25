@@ -20,11 +20,13 @@
             [zframes.dispatch-when]
             [stylo.core :refer [c]]
             [clojure-course.course-tree.view]
-            [clojure-course.activity-tracker.view]))
+            [clojure-course.activity-tracker.view]
+            [clojure-course.activity-tracker.model :refer [activity-tracker-open? ]]))
 
 (defn current-page []
   (let [{page :match params :params :as obj} @(rf/subscribe [:route-map/current-route])
         route-error @(rf/subscribe [:route-map/error])
+        activity-tracker-open? @(rf/subscribe [:clojure-course.activity-tracker.model/activity-tracker-open?])
         params (assoc params
                  :route page
                  :route-ns (when page (namespace page)))
@@ -39,9 +41,11 @@
                     [:div.not-found (str "Routing error")]))]
     [:main {:class (c [:mx 65] [:my 50])}
      [clojure-course.activity-tracker.view/activity-tracker]
-     [:div {:class (c {:background-color "white"} :h-screen :w-auto :flex
-                      [:rounded 42]
-                      :overflow-hidden)}
+     [:div {:class [(when-not activity-tracker-open?
+                      (c [:rounded-t 42]))
+                    (c {:background-color "white"} :h-screen :w-auto :flex
+                       [:rounded-b 42]
+                       :overflow-hidden)]}
       [:div {:class (c [:w "25%"] [:px 20] [:py 15] {:background-color "#F8F8F8"})}
        [clojure-course.course-tree.view/course-tree]]
       [:div {:class (c [:w "75%"])}]]]))
