@@ -51,7 +51,7 @@
       [:div {:class (c [:w "30%"] [:px 20] [:py 15] {:background-color "#F8F8F8"})}
        [clojure-course.course-tree.view/course-tree]]
       [:div {:class (c [:w "70%"] [:px 30] [:py 15])}
-       [clojure-course.course-content.view/course-content]]]]))
+       [:f> clojure-course.course-content.view/course-content]]]]))
 
 
 (zf/defx ws-receive [{db :db} data]

@@ -5,12 +5,13 @@
             [cheshire.core]
             [hiccup.core]
             [hiccup.page]
-            [garden.core]
+            [stylo.core]
             [org.httpkit.server :as server]
             [course-tests.operations :as ctop]
             [clojure.walk]
+            [clojure.string :as str]
             [course-content.core]
-            [course-content.frontend]))
+            [clojure-course.content]))
 
 
 (defmethod u/*fn ::rpc [{:as ctx,
@@ -26,7 +27,6 @@
   {:response {:status 200
               :body (hiccup.page/html5
                      [:head
-                      [:style (garden.core/css course-content.frontend/styles)]
                       [:link {:href "/static/css/stylo.css"
                               :type "text/css"
                               :rel  "stylesheet"}]
@@ -183,5 +183,8 @@ from cljtest where updated_at > (current_date - interval '5 weeks') group by dat
 
 (defmethod web.rpc/rpc 'rpc-ops/get-course-content
   [ctx {{:keys [module chapter] :as params} :params}]
-  {:result (hiccup.core/html
-            (course-content.core/content->html-structure module chapter))})
+  {:result {:html (hiccup.core/html
+                   (course-content.core/content->html-structure module chapter))
+            :stylo-styles (str/replace-first (stylo.core/compile-styles @stylo.core/styles)
+                                             "html {"
+                                             (str "." clojure-course.content/content-root-class " {"))}})
