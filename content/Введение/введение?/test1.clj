@@ -1,6 +1,7 @@
-(ns module2.chapter1.simple-test
+(ns Введение.введение?.abc
   (:require  [clojure.test :as t]
              [retest.retest :as rt]))
+
 
 
 (rt/deftest simple-failed
