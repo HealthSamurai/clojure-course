@@ -7,7 +7,7 @@
 (rt/deftest string-test
   (def my nil)
 
-  (t/is (string? nil)))
+  (t/is (string? my)))
 
 (rt/deftest sub-string-test
   (def my nil)
@@ -43,7 +43,7 @@
 (rt/deftest list-test
   (def my nil)
 
-  (t/is (list? nil)))
+  (t/is (list? my)))
 
 (rt/deftest list-conj-test
   (def my nil)

@@ -45,12 +45,12 @@
      [clojure-course.activity-tracker.view/activity-tracker]
      [:div {:class [(when-not activity-tracker-open?
                       (c [:rounded-t 42]))
-                    (c {:background-color "white"} :h-screen :w-auto :flex
+                    (c {:background-color "white"} #_:h-screen :w-auto :flex
                        [:rounded-b 42]
                        :overflow-hidden)]}
       [:div {:class (c [:w "30%"] [:px 20] [:py 15] {:background-color "#F8F8F8"})}
        [clojure-course.course-tree.view/course-tree]]
-      [:div {:class (c [:w "70%"] [:px 30] [:py 15])}
+      [:div {:class (c [:w "70%"] [:px 30] [:py 15] :overflow-y-scroll )}
        [:f> clojure-course.course-content.view/course-content]]]]))
 
 
