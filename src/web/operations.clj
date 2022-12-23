@@ -140,14 +140,20 @@
                                                                  [mname (assoc-in cont [:stats :module-progress]
                                                                                   (int (* (/ passed total) 100)))]))
                                                        modules))))
-        query-result (->> {:ql/type :pg/select
+        query-tree (->> {:ql/type :pg/select
                            :select  :*
                            :from    :cljtest}
                           (db.query/query ctx)
                           (map #(-> (get % :body)
                                     (assoc :created_at (get % :created_at))
                                     (assoc :updated_at (get % :updated_at)))))
-        course-tree (->> query-result
+
+        last-action (db.query/query-one ctx {:ql/type   :pg/select
+                                                         :select    :* #_{:chapter [:#>> :body [:chapter]]}
+                                                         :from      :cljtest
+                                                         :order-by  :created_at})
+
+        course-tree (->> query-tree
                          (reduce (fn [acc {:as test, :keys [module chapter test-name]}]
                                    (let [status (keyword (:status test))
                                          safe-inc (fnil inc 0)]
@@ -162,11 +168,12 @@
                                  {})
                          (calc-overall-module-progress))]
 
-    {:result (clojure.walk/postwalk (fn [node]
+    {:result {:tree (clojure.walk/postwalk (fn [node]
                                       (if (map? node)
                                         (into (sorted-map) node)
                                         node))
-                                    course-tree)}))
+                                    course-tree)
+              :last-action last-action}}))
 
 
 (defmethod web.rpc/rpc 'rpc-ops/get-month-activity

@@ -11,16 +11,17 @@
    :zen/rpc {:method 'rpc-ops/get-month-activity
              :path [page]}})
 
-
 (zf/defx close-activity-tracker
   [{:keys [db]} & _]
   {:db (assoc-in db [page :activity-tracker-open?] false)})
-
 
 (zf/defs activity-tracker-s
   [db _]
   (get-in db [page :data]))
 
+(zf/defs last-action
+  [db _]
+  (get-in db [:clojure-course.course-tree.model/index :data :last-action :body]))
 
 (zf/defs activity-tracker-open?
   [db _]

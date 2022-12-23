@@ -33,7 +33,7 @@
 
 (zf/defs course-tree-s
   [db _]
-  (get-in db [page :data]))
+  (get-in db [page :data :tree]))
 
 
 (zf/defx index [{db :db} phase _opts]

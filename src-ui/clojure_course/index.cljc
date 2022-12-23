@@ -81,7 +81,7 @@
       {:db {:route-map/routes clojure-course.routes/routes}
        :route-map/start {}
        :zen/rpc {:method 'rpc-ops/get-course-tree
-                 :path [::initialize]}
+                 :path [:clojure-course.course-tree.model/index]}
        :ws/connect {:id :course-tree/ws
                     :uri "/ws"
                     :open {:event ::ws-open}

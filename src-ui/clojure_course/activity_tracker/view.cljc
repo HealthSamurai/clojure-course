@@ -3,7 +3,7 @@
             [zf]
             [stylo.core :refer [c]]
             [clojure-course.activity-tracker.model :refer [activity-tracker-s open-activity-tracker activity-tracker-open?
-                                                           close-activity-tracker]]
+                                                           close-activity-tracker last-action]]
             [clojure-course.course-tree.model :refer [selected-module
                                                       selected-chapter]]))
 
@@ -16,7 +16,7 @@
     (>= activity 0) (c {:background-color "#EBEBEB"})))
 
 
-(zf/defv activity-tracker [activity-tracker-s activity-tracker-open? selected-module selected-chapter]
+(zf/defv activity-tracker [activity-tracker-s activity-tracker-open? selected-module selected-chapter last-action]
   (if-not activity-tracker-open?
     [:div {:class (c :flex :justify-end [:mx 20] [:my 10])}
      [:div {:class (c :flex :items-center [:hover :cursor-pointer])
@@ -47,7 +47,8 @@
        [:div {:class (c :flex :flex-col)}
         [:div {:class (c :capitalize :uppercase :font-bold {:color "#3661EB"} [:mb 3])}
          "Last Update"]
-        [:div {:class (c [:text :black] :text-2xl)} "Last Chapter: Last Test"]]]]
+        [:div {:class (c [:text :black] :uppercase  :text-3xl [:mb 2])} (:module last-action) ": " (:chapter last-action)]
+        [:div {:class (c [:text :black] :text-2xl)} (:test-name last-action)]]]]
      [:div {:class (c :font-bold [:rounded :full] [:w 10] [:h 10] {:background-color "#D9D9D9"} :text-center
                       [:hover :cursor-pointer])
             :on-click close-activity-tracker} "×" ]]))
